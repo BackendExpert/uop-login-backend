@@ -1,8 +1,0 @@
-services:
-  - name: php-api
-    type: web
-    runtime: docker
-    plan: free
-    envVars:
-      - key: PORT
-        value: 80
