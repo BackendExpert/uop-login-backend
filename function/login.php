@@ -8,7 +8,7 @@
     if($_SERVER["REQUEST_METHOD"] === "POST"){
         $data = json_decode(file_get_contents("php://input"), true);
         $email = $data['email'];
-        $password = password_hash($data['password'], PASSWORD_DEFAULT);
+        $password = $data['password'];
 
         $checkstmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
         $checkstmt->execute([$email]);
