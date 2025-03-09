@@ -123,13 +123,13 @@
             exit;
         }
 
-        if ($_GET['action'] === "getallNEWS") {
-            $getstmt = $pdo->prepare("SELECT * FROM news");
+        if ($_GET['action'] === "getResearch") {
+            $getstmt = $pdo->prepare("SELECT * FROM research");
             $getstmt->execute();
-            $news = $getstmt->fetchAll(PDO::FETCH_ASSOC);
+            $research = $getstmt->fetchAll(PDO::FETCH_ASSOC);
 
-            if ($news) {
-                echo json_encode(["Status" => "Success", "Result" => $news]);
+            if ($research) {
+                echo json_encode(["Status" => "Success", "Result" => $research]);
             } else {
                 echo json_encode(["Status" => "Error", "Result" => []]);
             }
