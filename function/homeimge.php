@@ -43,18 +43,42 @@
             if($count_rows >= 7){
                 echo json_encode(["error" => "Cannot add more Images (only 7 can Add)"]);
             }
-
-
-            $imgstmt = $pdo->prepare("INSERT INTO home_slider_img(img, title, imgdesc, link)
-            VALUES (?, ?, ?, ?)");
-
-            if ($imgstmt->execute([$target_file, $imgtitle, $imgdesc, $imglink])) {
-                echo json_encode(["Status" => "Success"]);
-            } else {
-                $errorInfo = $eventstmt->errorInfo();
-                echo json_encode(["error" => "Internal Server Error while Creating Events", "details" => $errorInfo]);
+            else{
+                $imgstmt = $pdo->prepare("INSERT INTO home_slider_img(img, title, imgdesc, link)
+                VALUES (?, ?, ?, ?)");
+    
+                if ($imgstmt->execute([$target_file, $imgtitle, $imgdesc, $imglink])) {
+                    echo json_encode(["Status" => "Success"]);
+                } else {
+                    $errorInfo = $eventstmt->errorInfo();
+                    echo json_encode(["error" => "Internal Server Error while Creating Events", "details" => $errorInfo]);
+                }
             }
 
+        }
+
+        if ($_POST['action'] === "deleteimg") {
+            $imgId = $_POST['Imgeid'] ?? '';
+
+            $stmt = $pdo->prepare("SELECT img FROM home_slider_img WHERE id = ?");
+            $stmt->execute([$imgId]);
+            $image = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if (!$image) {
+                echo json_encode(["error" => "Image not found"]);
+                exit;
+            }
+
+            if (!empty($image['img']) && file_exists($image['img'])) {
+                unlink($image['img']); 
+            }
+
+            $deleteStmt = $pdo->prepare("DELETE FROM home_slider_img WHERE id = ?");
+            if ($deleteStmt->execute([$imgId])) {
+                echo json_encode(["Status" => "Success"]);
+            } else {
+                echo json_encode(["error" => "Failed to delete image from database"]);
+            }
         }
     }
 
