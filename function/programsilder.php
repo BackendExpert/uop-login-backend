@@ -38,7 +38,7 @@
             $imgstmt = $pdo->prepare("INSERT INTO program_slider(title, pdesc, img, link)
             VALUES (?, ?, ?, ?)");
 
-            if ($imgstmt->execute([$ptitle, $pdesc, $target_file, $imglink])) {
+            if ($imgstmt->execute([$ptitle, $pdesc, $target_file, $plink])) {
                 echo json_encode(["Status" => "Success"]);
             } else {
                 $errorInfo = $eventstmt->errorInfo();
