@@ -83,7 +83,23 @@
             else{
                 echo json_encode(["error" => "Internal Server Error while updating event"]);
             }
-        }       
+        }   
+        
+        if ($_POST['action'] === "deletenotice") {
+            $imgId = $_POST['Imgeid'] ?? '';
+
+            $stmt = $pdo->prepare("SELECT * FROM notice WHERE notice_id = ?");
+            $stmt->execute([$imgId]);
+            $image = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+
+            $deleteStmt = $pdo->prepare("DELETE FROM notice WHERE notice_id = ?");
+            if ($deleteStmt->execute([$imgId])) {
+                echo json_encode(["Status" => "Success"]);
+            } else {
+                echo json_encode(["error" => "Failed to delete image from database"]);
+            }
+        }
 
     }
 

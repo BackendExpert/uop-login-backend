@@ -112,7 +112,31 @@
             else{
                 echo json_encode(["error" => "Internal Server Error while updating event"]);
             }
-        }       
+        }      
+        
+        if ($_POST['action'] === "deletenews") {
+            $imgId = $_POST['Imgeid'] ?? '';
+
+            $stmt = $pdo->prepare("SELECT * FROM news WHERE id = ?");
+            $stmt->execute([$imgId]);
+            $image = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if (!$image) {
+                echo json_encode(["error" => "Image not found"]);
+                exit;
+            }
+
+            if (!empty($image['img']) && file_exists($image['img'])) {
+                unlink($image['img']); 
+            }
+
+            $deleteStmt = $pdo->prepare("DELETE FROM news WHERE id = ?");
+            if ($deleteStmt->execute([$imgId])) {
+                echo json_encode(["Status" => "Success"]);
+            } else {
+                echo json_encode(["error" => "Failed to delete image from database"]);
+            }
+        }
 
     }
 
