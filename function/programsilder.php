@@ -70,6 +70,68 @@
                 echo json_encode(["error" => "Failed to delete image from database"]);
             }
         }
+
+        if ($_POST['action'] === "updatepImge") {
+            if (empty($_POST['title']) && empty($_POST['desc']) && empty($_POST['link']) && empty($_FILES['img']['name'])) {
+                echo json_encode(["error" => "At least one field is required to update"]);
+                exit;
+            }
+            $Himge = $_POST['pImgeID'];
+
+            $newsName = $_POST['title'] ?? '';
+            $newsDesc = $_POST['desc'] ?? '';
+            $newsLink = $_POST['link'] ?? '';
+
+            $target_file = "";
+            if (!empty($_FILES['img']['name'])) {
+                $target_dir = "uploads/";
+                if (!is_dir($target_dir)) {
+                    mkdir($target_dir, 0777, true);
+                }
+                $target_file = $target_dir . basename($_FILES["img"]["name"]);
+                if (!move_uploaded_file($_FILES["img"]["tmp_name"], $target_file)) {
+                    echo json_encode(["error" => "Image upload failed"]);
+                    exit;
+                }
+            }
+
+            $updateQuery = "UPDATE program_slider SET ";
+            $params = [];
+        
+
+            if ($newsName) {
+                $updateQuery .= "title = ?, ";
+                $params[] = $newsName;
+            }
+        
+            if ($newsDesc) {
+                $updateQuery .= "pdesc = ?, ";
+                $params[] = $newsDesc;
+            }
+        
+            if ($newsLink) {
+                $updateQuery .= "link = ?, ";
+                $params[] = $newsLink;
+            }
+        
+       
+            if ($target_file) {
+                $updateQuery .= "img = ?, ";
+                $params[] = $target_file;
+            }
+
+            $updateQuery = rtrim($updateQuery, ', ') . " WHERE id = ?";
+            $params[] = $Himge; 
+
+            $stmt = $pdo->prepare($updateQuery);
+
+            if($stmt->execute($params)){
+                echo json_encode(["Status" => "Success"]);
+            }
+            else{
+                echo json_encode(["error" => "Internal Server Error while updating event"]);
+            }
+        }    
     }
 
     // Handle GET requests
